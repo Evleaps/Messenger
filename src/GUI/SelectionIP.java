@@ -2,7 +2,7 @@ package GUI;
 import Logic.Constant;
 import javax.swing.*;
 
-public class SelectionIP extends WindowChat {
+public class SelectionIP extends JFrame {
     private static String[]   setIP   = {"LocalHost: 127.0.0.1", "Другой IP"};
     private static ImageIcon  icon    = null;
 

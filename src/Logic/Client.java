@@ -1,7 +1,7 @@
 package Logic;
 
-import GUI.WindowChat;
-import javax.swing.*;
+import GUI.App;
+import GUI.SelectionIP;
 import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 
 public class Client implements Runnable {
     public Client(String nameWindow) throws HeadlessException, UnknownHostException {
-        new WindowChat().Wind (nameWindow);
+        new SelectionIP ().IPButton ();
     }
 
     @Override
@@ -23,11 +23,9 @@ public class Client implements Runnable {
                 Constant.input = new ObjectInputStream (Constant.connection.getInputStream ( ));//читаем с сервера
                 Constant.output = new ObjectOutputStream (Constant.connection.getOutputStream ( )); //записываем на сервер
 
-                JOptionPane.showMessageDialog (null, (String) Constant.input.readObject ( ));
+                new App ();
             }
         } catch (UnknownHostException e) {
-            e.printStackTrace ( );
-        } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         } catch (IOException e) {
             e.printStackTrace ( );
