@@ -1,42 +1,82 @@
 package GUI;
 
+import Logic.Constant;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Created by Ромчи on 02.06.2017.
  */
 public class App extends JFrame implements Runnable {
-    private JTextField        messages;
-    private JButton           send;
-    private JTextArea         chat;
-    private JTextArea         userChat;
-    private JPanel            tykChat;
-    private static String[]   setIP   = {"LocalHost: 127.0.0.1", "Другой IP"};
-    private static ImageIcon  icon    = null;
+    private JPanel      tykChat;
+    private JTextField  messages;
+    private JButton     send;
+    private JTextArea   chat;
+    private JTextArea   userChat;
 
     public App() {
+        new SelectionIP ().IPButton ();//пользователь выбирает адресс подключения
+        new SelectionLogin ( ).Login ( );//Идентификация пользователя
+        if (Constant.LOGIN == null) System.exit (0);
+
         setContentPane (tykChat);
         setSize (350, 400);
         setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo (null); //окно вылезет в центре монитора
-
         setVisible (true);
+
+
+
+        send.addActionListener (new ActionListener ( ) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource () == send)
+                    Send (messages.getText ());
+            }
+        });
     }
 
     @Override
     public void run() {
-        send.addActionListener (new ActionListener ( ) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                JOptionPane.showMessageDialog (null,"dfdf");
+        try {
+            while (true) {
+                Constant.connection = new Socket (Constant.IP, Constant.PORT);
+                Constant.input = new ObjectInputStream (Constant.connection.getInputStream ());//читаем с сервера
+                Constant.output = new ObjectOutputStream (Constant.connection.getOutputStream ()); //записываем на сервер
+                UserOnline();
             }
-        });
-/**
- * Нужно этот класс превратить в Клиент и отсюда из Run делать операции. Обернуть в рекурсию, и расположить кнопки
- * JOptionPane.showMessageDialog (null,"dfdf"); должен работать из рекурсии и выводить сообщение только если есть
- * сейчас ничего не выводит*/
+        } catch (UnknownHostException e) {
+            e.printStackTrace ( );
+        } catch (IOException e) {
+            e.printStackTrace ( );
+        }
+    }
+
+
+    private void Send(Object messagesText) {
+        try {
+            Constant.output.flush ();
+            Constant.output.writeObject (messagesText);
+            chat.append ("\n" + Constant.LOGIN + ": " + messagesText.toString ());
+            messages.setText (null);//после отправки поле сообщения очищается.
+        } catch (IOException e) {
+            e.printStackTrace ( );
+        }
+    }
+
+    private void UserOnline() {
+        if (Constant.online == true && !userChat.getText().contains (Constant.LOGIN)) {
+            userChat.append ("\n" + Constant.LOGIN);
+        } else {
+            String buf = userChat.getText ();
+            buf.replace (Constant.LOGIN.toString(),"");
+            userChat.setText(buf);
+        }
     }
 }

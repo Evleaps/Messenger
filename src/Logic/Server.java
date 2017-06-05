@@ -11,22 +11,24 @@ import java.net.UnknownHostException;
  * Created by Ромчи on 01.06.2017.
  */
 public class Server implements Runnable {
-    static private Socket connection;
-    static private ObjectInputStream input;
-    static private ObjectOutputStream output;
-    static private ServerSocket server;
+    private static Socket             connection;
+    private static ObjectInputStream  input;
+    private static ObjectOutputStream output;
 
     @Override
     public void run() {
         try {
-            server = new ServerSocket (1234,10);
+            Constant.server = new ServerSocket (Constant.PORT,10);
             while (true) {
-                connection = server.accept ();//возвращает сокет который получил
-                output = new ObjectOutputStream (connection.getOutputStream ( )); //записываем на сервер
-                input = new ObjectInputStream (connection.getInputStream ( )); //читаем с сервера
-                output.writeObject ("Вы прислали" + (String)input.readObject ());
+                Constant.online = false;
+                connection = Constant.server.accept ();//возвращает сокет который получил
+                Constant.online = true;
+                output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
+                input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера
+                output.writeObject ("Вы прислали " + (String)input.readObject ());
             }
         } catch (UnknownHostException e) {
+            Constant.online = false;
             e.printStackTrace ( );
         } catch (ClassNotFoundException e) {
             e.printStackTrace ( );

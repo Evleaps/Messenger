@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
  */
 public class Main {
     public static void main(String[] args) throws UnknownHostException {
-        new Thread (new Client ("Chat")).start ( );
-        new Thread (new Server ( )).start ();
+        new Thread (new App ()).start ();
+        new Thread (new Server ()).start ();
     }
 }

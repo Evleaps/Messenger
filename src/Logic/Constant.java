@@ -2,6 +2,7 @@ package Logic;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
@@ -9,8 +10,11 @@ import java.net.Socket;
  */
 public abstract class Constant {
     public static Socket              connection;
+    public static ServerSocket        server;
     public static ObjectInputStream   input;
     public static ObjectOutputStream  output;
     public static final int           PORT = 1234;
     public static String              IP;
+    public static String              LOGIN;
+    public static boolean             online = false;
 }
