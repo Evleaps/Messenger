@@ -5,7 +5,7 @@ import Logic.Constant;
 import javax.swing.*;
 
 public class SelectionIP extends JFrame {
-    private static String[] setIP = {"LocalHost: 127.0.0.1", "Другой IP"};
+    private static String[] setIP = {"LocalHost: 127.0.0.1","Компьютер Ромы: 95.79.164.57", "Другой IP"};
     private static ImageIcon icon = null;
 
     public void IPButton() {
@@ -18,6 +18,8 @@ public class SelectionIP extends JFrame {
         try {
             if (selectionIP.toString ( ).equals ("LocalHost: 127.0.0.1")) {
                 Constant.IP = "127.0.0.1";
+            } else if (selectionIP.toString ( ).equals ("Компьютер Ромы: 95.79.164.57")) {
+                Constant.IP = "95.79.164.57";
             } else {
                 Constant.IP = JOptionPane.showInputDialog (this,
                         "Введите IP-адресс подключения",

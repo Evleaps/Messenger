@@ -9,6 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Ромчи on 02.06.2017.
@@ -21,17 +23,15 @@ public class App extends JFrame implements Runnable {
     private JTextArea   userChat;
 
     public App() {
-        new SelectionIP ().IPButton ();//пользователь выбирает адресс подключения
-        new SelectionLogin ( ).Login ( );//Идентификация пользователя
+        new SelectionIP().IPButton ();//пользователь выбирает адресс подключения
+        new SelectionLogin().Login ( );//Идентификация пользователя
         if (Constant.LOGIN == null) System.exit (0);
 
         setContentPane (tykChat);
-        setSize (350, 400);
+        setSize (400, 700);
         setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo (null); //окно вылезет в центре монитора
         setVisible (true);
-
-
 
         send.addActionListener (new ActionListener ( ) {
             @Override
@@ -61,9 +61,12 @@ public class App extends JFrame implements Runnable {
 
     private void Send(Object messagesText) {
         try {
+            SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
             Constant.output.flush ();
             Constant.output.writeObject (messagesText);
-            chat.append ("\n" + Constant.LOGIN + ": " + messagesText.toString ());
+            chat.append ("\n" + Constant.LOGIN + ": "
+                    + date.format (new Date ()) + "\n"
+                    + messagesText.toString ());
             messages.setText (null);//после отправки поле сообщения очищается.
         } catch (IOException e) {
             e.printStackTrace ( );
