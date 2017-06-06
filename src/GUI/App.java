@@ -1,5 +1,6 @@
 package GUI;
 
+import Logic.CheckForOnline;
 import Logic.Constant;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,13 @@ public class App extends JFrame implements Runnable {
     private JButton     send;
     private JTextArea   chat;
     private JTextArea   userChat;
+
+    private Socket              connection;
+    private ObjectInputStream   input;
+    private ObjectOutputStream  output;
+    private Socket              connectionCheckOn;
+    private ObjectInputStream   inputCheckOn;
+    private ObjectOutputStream  outputCheckOn;
 
     public App() {
         new SelectionIP().IPButton ();//пользователь выбирает адресс подключения
@@ -44,11 +52,14 @@ public class App extends JFrame implements Runnable {
 
     @Override
     public void run() {
+        new Thread (new CheckForOnline()).start ();
         try {
             while (true) {
-                Constant.connection = new Socket (Constant.IP, Constant.PORT);
-                Constant.input = new ObjectInputStream (Constant.connection.getInputStream ());//читаем с сервера
-                Constant.output = new ObjectOutputStream (Constant.connection.getOutputStream ()); //записываем на сервер
+                Constant.checkForOnline = false;
+                connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
+                input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
+                output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
+                Constant.checkForOnline = true;
                 UserOnline();
             }
         } catch (UnknownHostException e) {
@@ -62,24 +73,38 @@ public class App extends JFrame implements Runnable {
     private void Send(Object messagesText) {
         try {
             SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
-            Constant.output.flush ();
-            Constant.output.writeObject (messagesText);
-            chat.append ("\n" + Constant.LOGIN + ": "
+            output.flush ();
+            output.writeObject ( "\n" + Constant.LOGIN + ": "
                     + date.format (new Date ()) + "\n"
                     + messagesText.toString ());
+
+            String str = input.readObject ().toString ();
+            System.out.println (str );
+            chat.append (str);
             messages.setText (null);//после отправки поле сообщения очищается.
         } catch (IOException e) {
+            e.printStackTrace ( );
+        } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         }
     }
 
     private void UserOnline() {
-        if (Constant.online == true && !userChat.getText().contains (Constant.LOGIN)) {
-            userChat.append ("\n" + Constant.LOGIN);
-        } else {
-            String buf = userChat.getText ();
-            buf.replace (Constant.LOGIN.toString(),"");
-            userChat.setText(buf);
+        if (Constant.checkForOnline == true && Constant.userInChat == true) {}
+        else {
+            try {
+                connectionCheckOn = new Socket (Constant.IP, Constant.PORT_ONLINE);
+                inputCheckOn = new ObjectInputStream (connectionCheckOn.getInputStream ());//читаем с сервера
+                outputCheckOn = new ObjectOutputStream (connectionCheckOn.getOutputStream ()); //записываем на сервер
+
+                outputCheckOn.writeObject (Constant.LOGIN);
+                userChat.setText ("Участники беседы:" + "\n"
+                        + inputCheckOn.readObject().toString ());
+            } catch (IOException e) {
+                e.printStackTrace ( );
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace ( );
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 package Logic;
 
 import GUI.App;
-
 import java.net.UnknownHostException;
 
 /**
@@ -9,7 +8,7 @@ import java.net.UnknownHostException;
  */
 public class Main {
     public static void main(String[] args) throws UnknownHostException {
-        new Thread (new App ()).start ();
         new Thread (new Server ()).start ();
+        new Thread (new App ()).start ();
     }
 }

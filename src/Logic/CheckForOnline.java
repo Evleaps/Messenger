@@ -6,26 +6,36 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Created by Ромчи on 01.06.2017.
+ * Created by Ромчи on 06.06.2017.
  */
-public class Server implements Runnable {
+public class CheckForOnline implements Runnable {
     private static Socket             connection;
     private static ServerSocket       server;
     private static ObjectInputStream  input;
     private static ObjectOutputStream output;
+    private static Set<String> nameUser = new HashSet<> (Constant.userLimit);
+
 
     @Override
     public void run() {
         try {
-            server = new ServerSocket (Constant.PORT_MESSAGE,Constant.userLimit);
+            server = new ServerSocket (Constant.PORT_ONLINE,Constant.userLimit);
             while (true) {
                 connection = server.accept ();//возвращает сокет который получил
                 output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
                 input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера
-                output.writeObject ((String)input.readObject ());
-                System.out.println ( "Вы прислали " + (String)input.readObject ());
+
+                nameUser.add ((String)input.readObject ());
+                String nameAll = "";
+                for (String empty : nameUser) {
+                    nameAll += empty + "\n";
+                }
+                Constant.userInChat = true;
+                output.writeObject (nameAll);
             }
         } catch (UnknownHostException e) {
             e.printStackTrace ( );
