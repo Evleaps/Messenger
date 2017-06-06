@@ -25,6 +25,7 @@ public class CheckForOnline implements Runnable {
         try {
             server = new ServerSocket (Constant.PORT_ONLINE,Constant.userLimit);
             while (true) {
+                if (connection != null) connection.close ();
                 connection = server.accept ();//возвращает сокет который получил
                 output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
                 input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера

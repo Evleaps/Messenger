@@ -32,8 +32,8 @@ public class App extends JFrame implements Runnable {
 
     public App() {
         new SelectionIP().IPButton ();//пользователь выбирает адресс подключения
-        new SelectionLogin().Login ( );//Идентификация пользователя
-        if (Constant.LOGIN == null) System.exit (0);
+        new SelectionLogin().Login ( );//Идентификация пользователя(Ввод логина)
+        if (Constant.LOGIN == null) System.exit (0);//в случе если нажмет крестик на вводе логина
 
         setContentPane (tykChat);
         setSize (400, 700);
@@ -52,14 +52,14 @@ public class App extends JFrame implements Runnable {
 
     @Override
     public void run() {
-        new Thread (new CheckForOnline()).start ();
+        new Thread (new CheckForOnline()).start ();//проверка: в сети ли пользователь?
         try {
             while (true) {
-                Constant.checkForOnline = false;
+                Constant.checkForOnline = false;//См. Constant
                 connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
                 input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
                 output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
-                Constant.checkForOnline = true;
+                Constant.checkForOnline = true;//См. Constant
                 UserOnline();
             }
         } catch (UnknownHostException e) {
@@ -79,7 +79,6 @@ public class App extends JFrame implements Runnable {
                     + messagesText.toString ());
 
             String str = input.readObject ().toString ();
-            System.out.println (str );
             chat.append (str);
             messages.setText (null);//после отправки поле сообщения очищается.
         } catch (IOException e) {

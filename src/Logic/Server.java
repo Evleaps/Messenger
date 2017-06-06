@@ -21,11 +21,11 @@ public class Server implements Runnable {
         try {
             server = new ServerSocket (Constant.PORT_MESSAGE,Constant.userLimit);
             while (true) {
+                if (connection != null) connection.close ();
                 connection = server.accept ();//возвращает сокет который получил
                 output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
                 input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера
                 output.writeObject ((String)input.readObject ());
-                System.out.println ( "Вы прислали " + (String)input.readObject ());
             }
         } catch (UnknownHostException e) {
             e.printStackTrace ( );
