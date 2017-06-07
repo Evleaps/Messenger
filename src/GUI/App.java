@@ -1,6 +1,5 @@
 package GUI;
 
-import Logic.CheckForOnline;
 import Logic.Constant;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,6 +30,10 @@ public class App extends JFrame implements Runnable {
     private ObjectInputStream   inputCheckOn;
     private ObjectOutputStream  outputCheckOn;
 
+    public static void main(String[] args) throws UnknownHostException {
+        new Thread (new App ()).start ();
+    }
+
     public App() {
         new SelectionIP().IPButton ();//пользователь выбирает адресс подключения
         new SelectionLogin().Login ( );//Идентификация пользователя(Ввод логина)
@@ -54,19 +57,21 @@ public class App extends JFrame implements Runnable {
     @Override
     public void run() {
         System.out.println ("Запущен Клиент..." );
-        new Thread (new CheckForOnline()).start ();//проверка: в сети ли пользователь?
         try {
+            connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
+            input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
+            output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
             while (true) {
-                Constant.checkForOnline = false;//См. Constant
-                connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
-                input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
-                output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
-                Constant.checkForOnline = true;//См. Constant
+                System.out.println ("Есть кто?" );
+                Thread.sleep (5000);
                 UserOnline();
             }
+
         } catch (UnknownHostException e) {
             e.printStackTrace ( );
         } catch (IOException e) {
+            e.printStackTrace ( );
+        } catch (InterruptedException e) {
             e.printStackTrace ( );
         }
     }
@@ -91,21 +96,18 @@ public class App extends JFrame implements Runnable {
     }
 
     private void UserOnline() {
-        if (Constant.checkForOnline == true && Constant.userInChat == true) {}
-        else {
-            try {
-                connectionCheckOn = new Socket (Constant.IP, Constant.PORT_ONLINE);
-                inputCheckOn = new ObjectInputStream (connectionCheckOn.getInputStream ());//читаем с сервера
-                outputCheckOn = new ObjectOutputStream (connectionCheckOn.getOutputStream ()); //записываем на сервер
+        try {
+            connectionCheckOn = new Socket (Constant.IP, Constant.PORT_ONLINE);
+            inputCheckOn = new ObjectInputStream (connectionCheckOn.getInputStream ());//читаем с сервера
+            outputCheckOn = new ObjectOutputStream (connectionCheckOn.getOutputStream ()); //записываем на сервер
 
-                outputCheckOn.writeObject (Constant.LOGIN);
-                userChat.setText ("Участники беседы:" + "\n"
-                        + inputCheckOn.readObject().toString ());
-            } catch (IOException e) {
-                e.printStackTrace ( );
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace ( );
-            }
+            outputCheckOn.writeObject (Constant.LOGIN);
+            userChat.setText ("Участники беседы:" + "\n"
+                    + inputCheckOn.readObject().toString ());
+        } catch (IOException e) {
+            e.printStackTrace ( );
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace ( );
         }
     }
 }
