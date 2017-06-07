@@ -24,9 +24,11 @@ public class CheckForOnline implements Runnable {
     public void run() {
         try {
             server = new ServerSocket (Constant.PORT_ONLINE,Constant.userLimit);
+            System.out.println ("Проверка пользователя на сеть" );
             while (true) {
                 if (connection != null) connection.close ();
                 connection = server.accept ();//возвращает сокет который получил
+                System.out.println ("Сервер ONLINE подключил пользователя" );
                 output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
                 input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера
 

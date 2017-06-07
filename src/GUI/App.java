@@ -26,6 +26,7 @@ public class App extends JFrame implements Runnable {
     private Socket              connection;
     private ObjectInputStream   input;
     private ObjectOutputStream  output;
+
     private Socket              connectionCheckOn;
     private ObjectInputStream   inputCheckOn;
     private ObjectOutputStream  outputCheckOn;
@@ -45,13 +46,14 @@ public class App extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource () == send)
-                    Send (messages.getText ());
+                    Send (messages.getText ( ));
             }
         });
     }
 
     @Override
     public void run() {
+        System.out.println ("Запущен Клиент..." );
         new Thread (new CheckForOnline()).start ();//проверка: в сети ли пользователь?
         try {
             while (true) {
@@ -79,7 +81,7 @@ public class App extends JFrame implements Runnable {
                     + messagesText.toString ());
 
             String str = input.readObject ().toString ();
-            chat.append (str);
+            chat.setText (str);
             messages.setText (null);//после отправки поле сообщения очищается.
         } catch (IOException e) {
             e.printStackTrace ( );
