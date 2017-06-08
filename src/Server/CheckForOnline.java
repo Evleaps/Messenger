@@ -1,4 +1,6 @@
-package Logic;
+package Server;
+
+import Client.Constant;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -34,45 +36,35 @@ public class CheckForOnline implements Runnable {
     }
 
     private static class ConnectedClient extends Thread {
-        private static Socket connection;
-        private static ObjectInputStream input;
+        private static Socket             connection;
+        private static ObjectInputStream  input;
         private static ObjectOutputStream output;
-
+        private static String             loginUser;
 
 
         public ConnectedClient(Socket socket) throws IOException {
             connection = socket;
-            output = new ObjectOutputStream (connection.getOutputStream ( )); //Пишем в чат
-            input = new ObjectInputStream (connection.getInputStream ( )); //читаем с сервера
+            output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
+            input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера
         }
 
         @Override
         public void run() {
             try {
                 while (connection.isConnected ()) {
-                    String str = (String) input.readObject ();
-                    String[] flag = str.split ("/");
-
-                   if (flag[0].equals ("online")) {
-                       nameUser.add (flag[1]);
-                       String buff = null;
-                       for (String empty : nameUser) {
-                           buff += empty + "\n";
-                       }
-                       output.writeObject (buff);
-                   } else {
-                       nameUser.remove (flag[1]);
-                       String buff = null;
-                       for (String empty : nameUser) {
-                           buff += empty + "\n";
-                       }
-                       output.writeObject (buff);
-                   }
+                    loginUser = (String) input.readObject ();
+                    nameUser.add (loginUser);
+                    String buff = "";
+                    for (String empty : nameUser) {
+                        buff += empty + "\n";
+                    }
+                    output.writeObject (buff);
                 }
             } catch (IOException e) {
-                e.printStackTrace ( );
             } catch (ClassNotFoundException e) {
-                e.printStackTrace ( );
+            }finally {
+                nameUser.remove (loginUser);
+                System.out.println (loginUser + " перестал быть онлайн");
             }
         }
     }

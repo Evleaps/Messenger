@@ -1,7 +1,7 @@
-package GUI;
+package Client;
 
 import javax.swing.*;
-import static Logic.Constant.LOGIN;
+import static Client.Constant.LOGIN;
 
 public class SelectionLogin extends JFrame {
     private static String[]   setIP   = {LOGIN, "Войти под другим именем"};

@@ -1,6 +1,5 @@
-package GUI;
+package Client;
 
-import Logic.Constant;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,7 +61,6 @@ public class App extends JFrame implements Runnable {
             input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
             output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
             while (true) {
-                System.out.println ("Есть кто?" );
                 Thread.sleep (5000);
                 UserOnline();
             }

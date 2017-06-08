@@ -1,4 +1,6 @@
-package Logic;
+package Server;
+
+import Client.Constant;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,10 +16,12 @@ import java.util.List;
 public class Server {
     private static ServerSocket server;
     private static List<ConnectedClient> clients = new ArrayList<> ( );
+    private static StringBuffer historyMassages = new StringBuffer ("История сообщений: ");
 
     /**
-     * Сервер ждет подключение в бесконечном цикле, когда приходит сообщение, добавляем его в историю(буфер), отсылаем обратно всю историю.
-     * P/S если больше 5000 символов в истории, удаляем лишнее, экономим память
+     * Сервер ждет подключение в бесконечном цикле, если есть подключение, отправляем в список подключенных клиентов
+     * Список клиентов clients содержит каждого клиента как новый поток
+     * Если в historyMassages больше 5000 символов, удаляем ранние сообщения
      */
     public static void main(String[] args) {
         try {
@@ -37,7 +41,6 @@ public class Server {
         private static Socket connection;
         private static ObjectInputStream input;
         private static ObjectOutputStream output;
-        private static StringBuffer historyMassages = new StringBuffer ("История сообщений: ");
 
 
         public ConnectedClient(Socket socket) throws IOException {
@@ -63,9 +66,9 @@ public class Server {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace ( );
+
             } catch (ClassNotFoundException e) {
-                e.printStackTrace ( );
+
             } finally {
                 System.out.println ("Пользователь отключился");
             }

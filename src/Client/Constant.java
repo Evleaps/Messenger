@@ -1,4 +1,4 @@
-package Logic;
+package Client;
 
 /**
  1.userLimit указывает макс.колличество подключений к Server и CheckForOnline, так-же указывает размер HashSet в Server

@@ -1,6 +1,4 @@
-package GUI;
-
-import Logic.Constant;
+package Client;
 
 import javax.swing.*;
 
