@@ -1,7 +1,5 @@
 package Server;
 
-import Client.Constant;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,6 +12,7 @@ import java.util.List;
  * Created by Ромчи on 01.06.2017.
  */
 public class Server {
+    public static final int           PORT_MESSAGE = 7000;
     private static ServerSocket server;
     private static List<ConnectedClient> clients = new ArrayList<> ( );
     private static StringBuffer historyMassages = new StringBuffer ("История сообщений: ");
@@ -26,7 +25,7 @@ public class Server {
     public static void main(String[] args) {
         try {
             new Thread (new CheckForOnline()).start ();//проверка: в сети ли пользователь?
-            server = new ServerSocket (Constant.PORT_MESSAGE);
+            server = new ServerSocket (PORT_MESSAGE);
             while (true) {
                 ConnectedClient client = new ConnectedClient (server.accept ( ));
                 clients.add (client);
@@ -48,6 +47,9 @@ public class Server {
             System.out.println ("К серверу подключен пользователь...");
             output = new ObjectOutputStream (connection.getOutputStream ( )); //Пишем в чат
             input = new ObjectInputStream (connection.getInputStream ( )); //читаем с сервера
+            output.writeObject (CheckForOnline.nameUser);
+            output.flush ();
+            System.out.println ("Сервер передал новому пользователю список занятых логинов" );
         }
 
         @Override

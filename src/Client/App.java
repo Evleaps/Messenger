@@ -35,15 +35,6 @@ public class App extends JFrame implements Runnable {
 
     public App() {
         new SelectionIP().IPButton ();//пользователь выбирает адресс подключения
-        new SelectionLogin().Login ( );//Идентификация пользователя(Ввод логина)
-        if (Constant.LOGIN == null) System.exit (0);//в случе если нажмет крестик на вводе логина
-
-        setContentPane (tykChat);
-        setSize (400, 700);
-        setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo (null); //окно вылезет в центре монитора
-        setVisible (true);
-
         send.addActionListener (new ActionListener ( ) {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,11 +46,25 @@ public class App extends JFrame implements Runnable {
 
     @Override
     public void run() {
+        String activeLogin;
         System.out.println ("Запущен Клиент..." );
         try {
             connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
             input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
             output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
+
+            activeLogin = input.readObject().toString ();//список активных\занятых логинов
+            new SelectionLogin().Login (activeLogin);//Идентификация пользователя(Ввод логина)
+            if (Constant.LOGIN == null) System.exit (0);//в случе если нажмет крестик на вводе логина
+
+            setContentPane (tykChat);
+            setSize (400, 700);
+            setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo (null); //окно вылезет в центре монитора
+            setVisible (true);
+            userChat.setText ("Участники беседы:" + "\n" + activeLogin + Constant.LOGIN);
+            System.out.println (Constant.LOGIN + " появился в сети!" );
+
             while (true) {
                 Thread.sleep (5000);
                 UserOnline();
@@ -70,6 +75,8 @@ public class App extends JFrame implements Runnable {
         } catch (IOException e) {
             e.printStackTrace ( );
         } catch (InterruptedException e) {
+            e.printStackTrace ( );
+        } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         }
     }

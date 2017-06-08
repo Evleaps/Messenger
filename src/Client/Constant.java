@@ -7,7 +7,6 @@ package Client;
  4.IP, LOGIN задаются при включении программы
  */
 public abstract class Constant {
-    public static final int           userLimit = 20;
     public static final int           PORT_MESSAGE = 7000;
     public static final int           PORT_ONLINE = 7001;
     public static String              IP;

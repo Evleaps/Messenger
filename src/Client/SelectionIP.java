@@ -22,7 +22,7 @@ public class SelectionIP extends JFrame {
             } else if (selectionIP.toString ( ).equals ("Компьютер Ромы: 192.168.137.1")) {
                 Constant.IP = "192.168.137.1";
             } else if (selectionIP.toString ( ).equals ("Компьютер Ромы2: 5.3.210.100")) {
-                Constant.IP = "Компьютер Ромы2: 5.3.210.100";
+                Constant.IP = "5.3.210.100";
             } else {
                 Constant.IP = JOptionPane.showInputDialog (this,
                         "Введите IP-адресс подключения",
