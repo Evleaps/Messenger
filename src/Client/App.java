@@ -85,14 +85,13 @@ public class App extends JFrame implements Runnable {
     private void Send(Object messagesText) {
         try {
             SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
-            output.flush ();
             output.writeObject ( "\n" + Constant.LOGIN + ": "
                     + date.format (new Date ()) + "\n"
                     + messagesText.toString ());
+            output.flush ();
 
-            String str = input.readObject ().toString ();
-            chat.setText (str);
-            messages.setText (null);//после отправки поле сообщения очищается.
+            chat.setText (input.readObject().toString ());
+            messages.setText ("");//после отправки поле сообщения очищается.
         } catch (IOException e) {
             e.printStackTrace ( );
         } catch (ClassNotFoundException e) {

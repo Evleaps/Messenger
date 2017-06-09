@@ -45,7 +45,7 @@ public class CheckForOnline implements Runnable {
         }
 
         @Override
-        public synchronized void run() {
+        public void run() {
             try {
                 while (connection.isConnected()) {
                     loginUser = (String) input.readObject();
@@ -62,7 +62,7 @@ public class CheckForOnline implements Runnable {
             } catch (IOException e) {
             } catch (ClassNotFoundException e) {
             }finally {
-                nameUser.replace (loginUser + "\n","");
+                nameUser.replaceAll (loginUser,"");
                 System.out.println (loginUser + " перестал быть онлайн");
             }
         }
