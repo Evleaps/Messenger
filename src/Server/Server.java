@@ -1,69 +1,82 @@
 package Server;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
-/**
- * Created by Ромчи on 01.06.2017.
- */
 public class Server {
-    public static final int     PORT_MESSAGE = 7000;
-    private static ServerSocket server;
-    private static List<ConnectedClient> clients = Collections.synchronizedList ( new ArrayList<ConnectedClient> () );
+    private List<Connection> connections = Collections.synchronizedList (new ArrayList<Connection> ( ));
     private static StringBuffer historyMassages = new StringBuffer ("История сообщений: ");
+    public static final int PORT_MESSAGE = 7000;
+    private ServerSocket server;
 
     /**
      * Сервер ждет подключение в бесконечном цикле, если есть подключение, отправляем в список подключенных клиентов
      * Список клиентов clients содержит каждого клиента как новый поток
      * Если в historyMassages больше 5000 символов, удаляем ранние сообщения
      */
-    public static void main(String[] args) throws IOException {
+
+    public Server() {
         try {
-            new Thread (new CheckForOnline()).start ();//проверка: в сети ли пользователь?
+            new Thread (new CheckForOnline ( )).start ( );//проверка: в сети ли пользователь?
             server = new ServerSocket (PORT_MESSAGE);
+
             while (true) {
-                ConnectedClient client = new ConnectedClient (server.accept ( ));
-                System.out.println ("Колличество клиентов main = " + clients.size () );
-                clients.add (client);
-                ConnectedClient.nameClient = client;
-                client.start ( );
+                Socket socket = server.accept ( );
+                Connection con = new Connection (socket);
+                connections.add (con);
+                con.start ( );
+
             }
         } catch (IOException e) {
             e.printStackTrace ( );
         } finally {
-            server.close ();
+            closeAll ( );
         }
     }
 
-    private static class ConnectedClient extends Thread {
-        private static Socket connection;
-        private static ObjectInputStream input;
-        private static ObjectOutputStream output;
-        protected static ConnectedClient nameClient;
-        private static String messages;
+    private void closeAll() {
+        try {
+            server.close ( );
+            synchronized (connections) {
+                Iterator<Connection> iter = connections.iterator ( );
+                while (iter.hasNext ( )) {
+                    ((Connection) iter.next ( )).close ( );
+                }
+            }
+        } catch (Exception e) {
+            System.err.println ("Потоки не были закрыты!");
+        }
+    }
+
+    private class Connection extends Thread {
+        private  Socket connection;
+        private  ObjectInputStream input;
+        private  ObjectOutputStream output;
+        protected  Connection nameClient;
+        private  String messages;
 
 
+        public Connection(Socket socket) {
+            try {
+                connection = socket;
+                output = new ObjectOutputStream (connection.getOutputStream ( )); //Пишем в чат
+                input = new ObjectInputStream (connection.getInputStream ( )); //читаем с сервера
+                output.writeObject (CheckForOnline.nameUser);
+                output.flush ( );
 
-        public ConnectedClient(Socket socket) throws IOException {
-            connection = socket;
-            System.out.println ("К серверу подключен пользователь...");
-            output = new ObjectOutputStream (connection.getOutputStream ( )); //Пишем в чат
-            input = new ObjectInputStream (connection.getInputStream ( )); //читаем с сервера
-            output.writeObject (CheckForOnline.nameUser);
-            output.flush ();
-            System.out.println ("Сервер передал новому пользователю список занятых логинов" );
+            } catch (IOException e) {
+                e.printStackTrace ( );
+            }
         }
 
         @Override
         public void run() {
             try {
-                System.out.println ("Колличество клиентов run = " + clients.size () );
                 while (connection.isConnected ()) {
                     messages = (String) input.readObject();
                     historyMassages.append (messages);
@@ -71,20 +84,32 @@ public class Server {
                     if (historyMassages.length ( ) > 5000)
                         historyMassages.delete (5000, historyMassages.length ( ));
 
-                    synchronized (clients) {
-                        for (ConnectedClient empty : Server.clients) {
-                            empty.output.writeObject (historyMassages.toString ( ));
-                        }
-                    }
+                    output.writeObject (historyMassages.toString ());
+                    output.flush ();
                 }
             } catch (IOException e) {
-
+                e.printStackTrace ( );
             } catch (ClassNotFoundException e) {
-
+                e.printStackTrace ( );
             } finally {
-                clients.remove (nameClient);
-                System.out.println ("Пользователь отключился");
-                System.out.println ("Количество клиентов = " + clients.size () );
+                close ( );
+            }
+        }
+
+        /**
+         * Закрывает входной и выходной потоки и сокет
+         */
+        public void close() {
+            try {
+                // Если больше не осталось соединений, закрываем всё, что есть и
+                // завершаем работу сервера
+                connections.remove (this);
+                if (connections.size ( ) == 0) {
+                    Server.this.closeAll ( );
+                    System.exit (0);
+                }
+            } catch (Exception e) {
+                System.err.println ("Потоки не были закрыты!");
             }
         }
     }

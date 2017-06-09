@@ -1,3 +1,4 @@
+/*
 package Client;
 
 import javax.swing.*;
@@ -11,9 +12,11 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+*/
 /**
  * Created by Ромчи on 02.06.2017.
- */
+ *//*
+
 public class App extends JFrame implements Runnable {
     private JPanel      tykChat;
     private JTextField  messages;
@@ -39,7 +42,7 @@ public class App extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource () == send)
-                    sendMessage (messages.getText ( ));
+                    Send (messages.getText ( ));
             }
         });
     }
@@ -66,24 +69,15 @@ public class App extends JFrame implements Runnable {
             System.out.println (Constant.LOGIN + " появился в сети!" );
 
             while (true) {
-
+                Thread.sleep (5000);
                 UserOnline();
-                updateMassage ();
             }
 
         } catch (UnknownHostException e) {
             e.printStackTrace ( );
         } catch (IOException e) {
             e.printStackTrace ( );
-        }  catch (ClassNotFoundException e) {
-            e.printStackTrace ( );
-        }
-    }
-
-    private void updateMassage() {
-        try {
-            chat.setText (input.readObject().toString ());
-        } catch (IOException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace ( );
         } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
@@ -91,7 +85,7 @@ public class App extends JFrame implements Runnable {
     }
 
 
-    private void sendMessage(Object messagesText) {
+    private void Send(Object messagesText) {
         try {
             SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
             output.writeObject ( "\n" + Constant.LOGIN + ": "
@@ -99,8 +93,11 @@ public class App extends JFrame implements Runnable {
                     + messagesText.toString ());
             output.flush ();
 
+            chat.setText (input.readObject().toString ());
             messages.setText ("");//после отправки поле сообщения очищается.
         } catch (IOException e) {
+            e.printStackTrace ( );
+        } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         }
     }
@@ -120,4 +117,4 @@ public class App extends JFrame implements Runnable {
             e.printStackTrace ( );
         }
     }
-}
+}*/
