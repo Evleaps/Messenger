@@ -45,16 +45,17 @@ public class CheckForOnline implements Runnable {
         }
 
         @Override
-        public void run() {
+        public synchronized void run() {
             try {
                 while (connection.isConnected()) {
                     loginUser = (String) input.readObject();
                     String[] allUser = nameUser.split ("\n");
-                    System.out.println (nameUser + " КОНЕЦ!!!!" );
+
+                    boolean coincidence = false;
                     for (String s : allUser) {
-                        if (s.contains (loginUser));
-                        else nameUser += (loginUser + "\n");
+                        if (s.equals (loginUser)) coincidence = true;
                     }
+                    if (coincidence == false) nameUser += (loginUser + "\n");
 
                     output.writeObject (nameUser);
                 }
