@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  * Created by Ромчи on 02.06.2017.
  */
-public class App extends JFrame implements Runnable {
+public class App extends JFrame {
     private JPanel      tykChat;
     private JTextField  messages;
     private JButton     send;
@@ -30,28 +30,19 @@ public class App extends JFrame implements Runnable {
     private ObjectOutputStream  outputCheckOn;
 
     public static void main(String[] args) throws UnknownHostException {
-        new Thread (new App ()).start ();
+       new App ();
     }
 
     public App() {
         new SelectionIP().IPButton ();//пользователь выбирает адресс подключения
-        send.addActionListener (new ActionListener ( ) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (e.getSource () == send)
-                    sendMessage (messages.getText ( ));
-            }
-        });
-    }
 
-    @Override
-    public void run() {
         String activeLogin;
         System.out.println ("Запущен Клиент..." );
         try {
             connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
             input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
             output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
+
 
             activeLogin = input.readObject().toString ();//список активных\занятых логинов
             new SelectionLogin().Login (activeLogin);//Идентификация пользователя(Ввод логина)
@@ -65,11 +56,8 @@ public class App extends JFrame implements Runnable {
             userChat.setText ("Участники беседы:" + "\n" + activeLogin + Constant.LOGIN);
             System.out.println (Constant.LOGIN + " появился в сети!" );
 
-            while (true) {
-
-                UserOnline();
-                updateMassage ();
-            }
+            Resender resend = new Resender();
+            resend.start();
 
         } catch (UnknownHostException e) {
             e.printStackTrace ( );
@@ -80,16 +68,29 @@ public class App extends JFrame implements Runnable {
         }
     }
 
-    private void updateMassage() {
-        try {
-            chat.setText (input.readObject().toString ());
-        } catch (IOException e) {
-            e.printStackTrace ( );
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace ( );
+    private class Resender extends Thread {
+        @Override
+        public void run() {
+            while (true) {
+                send.addActionListener (new ActionListener ( ) {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (e.getSource () == send)
+                            sendMessage (messages.getText ( ));
+                    }
+                });
+
+                try {
+                    chat.setText (input.readObject().toString ());
+                    UserOnline();
+                } catch (IOException e) {
+                    e.printStackTrace ( );
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace ( );
+                }
+            }
         }
     }
-
 
     private void sendMessage(Object messagesText) {
         try {
