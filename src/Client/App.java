@@ -3,9 +3,7 @@ package Client;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -21,13 +19,13 @@ public class App extends JFrame {
     private JTextArea   chat;
     private JTextArea   userChat;
 
-    private Socket              connection;
-    private ObjectInputStream   input;
-    private ObjectOutputStream  output;
+    private Socket          connection;
+    private BufferedReader  input;
+    private PrintWriter     output;
 
-    private Socket              connectionCheckOn;
-    private ObjectInputStream   inputCheckOn;
-    private ObjectOutputStream  outputCheckOn;
+    private Socket          connectionCheckOn;
+    private BufferedReader  inputCheckOn;
+    private PrintWriter     outputCheckOn;
 
     public static void main(String[] args) throws UnknownHostException {
        new App ();
@@ -40,11 +38,11 @@ public class App extends JFrame {
         System.out.println ("Запущен Клиент..." );
         try {
             connection = new Socket (Constant.IP, Constant.PORT_MESSAGE);
-            input = new ObjectInputStream (connection.getInputStream ());//читаем с сервера
-            output = new ObjectOutputStream (connection.getOutputStream ()); //записываем на сервер
+            input = new BufferedReader (new InputStreamReader (connection.getInputStream ( )));//читаем с сервера
+            output = new PrintWriter (connection.getOutputStream ( ), true);//записываем на сервер
 
 
-            activeLogin = input.readObject().toString ();//список активных\занятых логинов
+            activeLogin = input.readLine ();//список активных\занятых логинов
             new SelectionLogin().Login (activeLogin);//Идентификация пользователя(Ввод логина)
             if (Constant.LOGIN == null) System.exit (0);//в случе если нажмет крестик на вводе логина
 
@@ -59,11 +57,17 @@ public class App extends JFrame {
             Resender resend = new Resender();
             resend.start();
 
+            send.addActionListener (new ActionListener ( ) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (e.getSource () == send)
+                        sendMessage (messages.getText ( ));
+                }
+            });
+
         } catch (UnknownHostException e) {
             e.printStackTrace ( );
         } catch (IOException e) {
-            e.printStackTrace ( );
-        }  catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         }
     }
@@ -72,20 +76,10 @@ public class App extends JFrame {
         @Override
         public void run() {
             while (true) {
-                send.addActionListener (new ActionListener ( ) {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (e.getSource () == send)
-                            sendMessage (messages.getText ( ));
-                    }
-                });
-
                 try {
-                    chat.setText (input.readObject().toString ());
+                    chat.setText (input.readLine ());
                     UserOnline();
                 } catch (IOException e) {
-                    e.printStackTrace ( );
-                } catch (ClassNotFoundException e) {
                     e.printStackTrace ( );
                 }
             }
@@ -93,31 +87,24 @@ public class App extends JFrame {
     }
 
     private void sendMessage(Object messagesText) {
-        try {
-            SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
-            output.writeObject ( "\n" + Constant.LOGIN + ": "
-                    + date.format (new Date ()) + "\n"
-                    + messagesText.toString ());
-            output.flush ();
 
-            messages.setText ("");//после отправки поле сообщения очищается.
-        } catch (IOException e) {
-            e.printStackTrace ( );
-        }
+        SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
+        output.println (Constant.LOGIN + ": "
+                + date.format (new Date ())
+                + " " + messagesText.toString ());
+        messages.setText ("");//после отправки поле сообщения очищается.
     }
 
     private void UserOnline() {
         try {
             connectionCheckOn = new Socket (Constant.IP, Constant.PORT_ONLINE);
-            inputCheckOn = new ObjectInputStream (connectionCheckOn.getInputStream ());//читаем с сервера
-            outputCheckOn = new ObjectOutputStream (connectionCheckOn.getOutputStream ()); //записываем на сервер
+            inputCheckOn = new BufferedReader (new InputStreamReader (connectionCheckOn.getInputStream ( )));//читаем с сервера
+            outputCheckOn = new PrintWriter (connectionCheckOn.getOutputStream ( ), true); //записываем на сервер
 
-            outputCheckOn.writeObject (Constant.LOGIN);
+            outputCheckOn.println (Constant.LOGIN);
             userChat.setText ("Участники беседы:" + "\n"
-                    + inputCheckOn.readObject().toString ());
+                    + inputCheckOn.readLine ().toString ());
         } catch (IOException e) {
-            e.printStackTrace ( );
-        } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         }
     }

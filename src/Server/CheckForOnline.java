@@ -1,69 +1,118 @@
 package Server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-/**
- * Для каждого клиента создается
- */
-public class CheckForOnline implements Runnable {
-    private static final int    PORT_ONLINE = 7001;
-    private static ServerSocket server;
-    protected static String     nameUser = "";
-    private static List<ConnectedClient> clients = new ArrayList<> ( );
+public class CheckForOnline  {
+    public static final int PORT_ONLINE = 7001;
+    private List<Connection> connections = Collections.synchronizedList(new ArrayList<Connection>());
+    private ServerSocket server;
+    private String allUser = "";
 
-    @Override
-    public void run() {
+    public static void main(String[] args) {
+        new CheckForOnline ();
+    }
+
+    public CheckForOnline() {
         try {
-            server = new ServerSocket (PORT_ONLINE);
+            server = new ServerSocket(PORT_ONLINE);
             while (true) {
-                ConnectedClient client = new ConnectedClient (server.accept ( ));
-                clients.add (client);
-                client.start ();
+                Socket socket = server.accept();
+                Connection con = new Connection(socket);
+                connections.add(con);
+                con.start();
             }
         } catch (IOException e) {
-            e.printStackTrace ();
+            e.printStackTrace();
+        } finally {
+            closeAll();
         }
     }
 
-    private static class ConnectedClient extends Thread {
-        private static Socket             connection;
-        private static ObjectInputStream  input;
-        private static ObjectOutputStream output;
-        private static String             loginUser;
+    private void closeAll() {
+        try {
+            server.close();
+            synchronized(connections) {
+                Iterator<Connection> iter = connections.iterator();
+                while(iter.hasNext()) {
+                    ((Connection) iter.next()).close();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Потоки не были закрыты!");
+        }
+    }
 
+    private class Connection extends Thread {
+        private BufferedReader in;
+        private PrintWriter out;
+        private Socket socket;
 
-        public ConnectedClient(Socket socket) throws IOException {
-            connection = socket;
-            output = new ObjectOutputStream (connection.getOutputStream ()); //Пишем в чат
-            input = new ObjectInputStream (connection.getInputStream ()); //читаем с сервера
+        public Connection(Socket socket) {
+            this.socket = socket;
+
+            try {
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                close();
+            }
         }
 
         @Override
         public void run() {
             try {
-                while (connection.isConnected()) {
-                    loginUser = (String) input.readObject();
-                    String[] allUser = nameUser.split ("\n");
+                String loginUser;
+                while (socket.isConnected ()) {
+                    loginUser = in.readLine();
+                    String[] user = allUser.split ("\\p{Punct}");
 
                     boolean coincidence = false;
-                    for (String s : allUser) {
+                    for (String s : user) {
                         if (s.equals (loginUser)) coincidence = true;
                     }
-                    if (coincidence == false) nameUser += (loginUser + "\n");
+                    if (coincidence == false) allUser += (loginUser.concat ("/"));
 
-                    output.writeObject (nameUser);
+                    // Отправляем всем клиентам список активных пользователей
+                    synchronized(connections) {
+                        Iterator<Connection> iter = connections.iterator();
+                        while(iter.hasNext()) {
+                            ((Connection) iter.next()).out.println(allUser);
+                        }
+                    }
                 }
             } catch (IOException e) {
-            } catch (ClassNotFoundException e) {
-            }finally {
-                nameUser.replaceAll (loginUser,"");
-                System.out.println (loginUser + " перестал быть онлайн");
+                e.printStackTrace();
+            } finally {
+                close();
+            }
+        }
+
+        public void close() {
+            try {
+                in.close();
+                out.close();
+                socket.close();
+
+                // Если больше не осталось соединений, закрываем всё, что есть и
+                // завершаем работу сервера
+                connections.remove(this);
+                if (connections.size() == 0) {
+                    CheckForOnline.this.closeAll();
+                    System.exit(0);
+                }
+            } catch (Exception e) {
+                System.err.println("Потоки не были закрыты!");
             }
         }
     }
