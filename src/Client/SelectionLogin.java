@@ -1,22 +1,23 @@
 package Client;
 
 import javax.swing.*;
+
 import static Client.Constant.LOGIN;
 
-public  class SelectionLogin extends JFrame {
-    private static String[]   setIP   = {LOGIN, "Войти под другим именем"};
-    private static ImageIcon  icon    = null;
-    private static String     unverifiedName   = null;
 
-    /**В будущем БД будет сохранять пользователя после входа*/
+public  class SelectionLogin extends JFrame {
+    private static String[]  setIP          = {LOGIN, "Войти под другим именем"};
+    private static ImageIcon icon           = null;
+    private static String    unverifiedName = null;
+
     public void Login(String activeLogin) {
-        if (LOGIN != null) SelectionLogin (activeLogin);
+        if (LOGIN != null) selectionLogin (activeLogin);
         else {
             addName (activeLogin);
         }
     }
 
-    private void SelectionLogin(String activeLogin) {
+    private void selectionLogin(String activeLogin) {
         Object selectionLogin = JOptionPane.showInputDialog (this,
                 "Ваш Логин?",
                 "Настройка подключения",
@@ -35,20 +36,23 @@ public  class SelectionLogin extends JFrame {
                     "Настройка подключения",
                     JOptionPane.QUESTION_MESSAGE);
 
-            String[] allLogin = activeLogin.split ("\n");
-            boolean flag = false;
-            for (String s : allLogin) {
-                if (s.equals (unverifiedName)) {
-                    flag = true;
+                String[] allLogin = activeLogin.split ("\n");
+                boolean flag = false;
+                for (String s : allLogin) {
+                    if (s.toLowerCase ( ).equals (unverifiedName.toLowerCase ( ))) {
+                        flag = true;
+                    }
                 }
-            }
 
-            if (flag == true)
-                JOptionPane.showMessageDialog (this,"Логин занят другим пользователем!");
-            else {
-                LOGIN = unverifiedName;
-                break;
-            }
+                if (flag == true)
+                    JOptionPane.showMessageDialog (this, "Логин занят другим пользователем!");
+                else {
+                    if (unverifiedName.length () > Constant.MIN_SYMBOL && unverifiedName.length () <= Constant.MAX_SYMBOL) {
+                        LOGIN = unverifiedName;
+                        break;
+                    } else
+                        JOptionPane.showMessageDialog (this, "Логин должен быть от 3-х до 15-и символов");
+                }
         }
     }
 }

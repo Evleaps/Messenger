@@ -1,8 +1,8 @@
-package Client1;
+package Client;
 
 import javax.swing.*;
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 
 /**
@@ -10,26 +10,26 @@ import java.io.PrintWriter;
  */
 public class CheckForOnline extends Thread {
     private PrintWriter    outputCheckForOnline;
-    private BufferedReader inputCheckForOnline;
+    private ObjectInputStream inputCheckForOnline;
     private JTextArea      userChat;
 
-    public CheckForOnline(PrintWriter outputCheckForOnline, BufferedReader inputCheckForOnline, JTextArea userChat) {
+    public CheckForOnline(PrintWriter outputCheckForOnline, ObjectInputStream inputCheckForOnline, JTextArea userChat) {
         this.outputCheckForOnline = outputCheckForOnline;
         this.inputCheckForOnline = inputCheckForOnline;
-        this. userChat =  userChat;
+        this. userChat = userChat;
     }
 
     @Override
     public void run(){
         try {
-            String all;
             while (true){
                 outputCheckForOnline.println (Constant.LOGIN);
-                String[] allUser = inputCheckForOnline.readLine ().split ("\\p{Punct}");
-                all = "";
-                for (String s : allUser) {
-                    if (s.length () > Constant.MIN_SYMBOL) all += s + "\n";
+                String[] allUserOnline = inputCheckForOnline.readObject ().toString ().split ("\n");
+                String all = "";
+                for (String s : allUserOnline) {
+                    if (s.length () > Constant.MIN_SYMBOL) all +=  s + "\n";
                 }
+
                 userChat.setText ("Участники беседы: " + "\n" + all);
                 Thread.sleep (Constant.SLEEP_ONLINE);
             }
@@ -37,6 +37,8 @@ public class CheckForOnline extends Thread {
         } catch (IOException e1) {
             e1.printStackTrace ( );
         } catch (InterruptedException e) {
+            e.printStackTrace ( );
+        } catch (ClassNotFoundException e) {
             e.printStackTrace ( );
         }
     }
