@@ -1,7 +1,6 @@
 package Client;
 
 import javax.swing.*;
-
 import static Client.Constant.LOGIN;
 
 

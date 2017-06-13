@@ -10,7 +10,7 @@ import java.util.List;
 /** Сервер бесконечно ожидает подключение. Если оно появилось, то создает новый поток для каждого клиента
  * Список allConections содержит всех пользователей, получив вообщ мы отправляем его всем пользователям
  * из списка используя foreach. См.класс Connections*/
-public class ServerMessage implements Runnable {
+public class ServerMessage extends Thread {
     private static final int PORT_MESSAGE = 7000;
     protected static List<ConnectionMessage> allConnectionMessages =
             Collections.synchronizedList (new ArrayList<ConnectionMessage> ( ));

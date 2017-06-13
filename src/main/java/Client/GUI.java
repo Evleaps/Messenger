@@ -68,7 +68,6 @@ public class GUI extends JFrame{
 
 
         send.addActionListener (new ActionListener ( ) {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource ( ) == send)
                     sendMessage (messages.getText ( ));

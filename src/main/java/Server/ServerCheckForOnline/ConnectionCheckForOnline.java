@@ -19,9 +19,9 @@ public class ConnectionCheckForOnline extends Thread {
                                     List<ConnectionCheckForOnline> connectionCheckForOnlines) {
         this.connectionCheckForOnline = connectionCheckForOnlines;
         this.socket = socket;
-
+/**меняем кодировку на Windows-1251, для верного отображения при запуске из Windows*/
         try {
-            in = new BufferedReader (new InputStreamReader (socket.getInputStream ( )));
+            in = new BufferedReader (new InputStreamReader (socket.getInputStream ( ),"Windows-1251"));
             out = new ObjectOutputStream (socket.getOutputStream ( ));
 
         } catch (IOException e) {

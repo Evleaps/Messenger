@@ -4,8 +4,8 @@ import javax.swing.*;
 
 public class SelectionIP extends JFrame {
     private static String[] setIP = {"LocalHost: 127.0.0.1",
-            "Компьютер Ромы: 192.168.137.1",
-            "Компьютер Ромы2: 5.3.210.100",
+            "Статический IP: 192.168.137.1",
+            "Динамический IP: 95.79.129.164",
             "Другой IP"};
     private static ImageIcon icon = null;
 
@@ -19,10 +19,10 @@ public class SelectionIP extends JFrame {
         try {
             if (selectionIP.toString ( ).equals ("LocalHost: 127.0.0.1")) {
                 Constant.IP = "127.0.0.1";
-            } else if (selectionIP.toString ( ).equals ("Компьютер Ромы: 192.168.137.1")) {
+            } else if (selectionIP.toString ( ).equals ("Статический IP: 192.168.137.1")) {
                 Constant.IP = "192.168.137.1";
-            } else if (selectionIP.toString ( ).equals ("Компьютер Ромы2: 5.3.210.100")) {
-                Constant.IP = "5.3.210.100";
+            } else if (selectionIP.toString ( ).equals ("Динамический IP: 95.79.129.164")) {
+                Constant.IP = "95.79.129.164";
             } else {
                 Constant.IP = JOptionPane.showInputDialog (this,
                         "Введите IP-адресс подключения",

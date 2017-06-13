@@ -22,9 +22,10 @@ public class ConnectionMessage extends Thread {
         this.socket = socket;
 /**
 В случае разрыва соединения, потоки закрываются, сокет закрывается. История храниться в ServerMessage, записываем в
- начало истории каждое новое сообщение, что-бы в GUI новое сообщение было вверху */
+ начало истории каждое новое сообщение, что-бы в GUI новое сообщение было вверху,
+ меняем кодировку на Windows-1251, для верного отображения при запуске из Windows*/
         try {
-            in = new BufferedReader(new InputStreamReader (socket.getInputStream()));
+            in = new BufferedReader(new InputStreamReader (socket.getInputStream(),"Windows-1251"));
             out = new ObjectOutputStream (socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,7 +37,7 @@ public class ConnectionMessage extends Thread {
     public void run() {
         try {
             loginUser = in.readLine();
-            ServerMessage.historyMessage.append ("Подключился пользователь: \"" + loginUser + "\"\n");
+            ServerMessage.historyMessage.insert (0,"Подключился пользователь: \"" + loginUser + "\" \n");
 
             // Отправляем всем клиентам сообщение о том, что зашёл новый пользователь
             synchronized(allConnectionMessages) {
@@ -48,7 +49,7 @@ public class ConnectionMessage extends Thread {
             while (true) {
                 SimpleDateFormat date = new SimpleDateFormat ("HH:mm:ss");
                 message = in.readLine();
-                ServerMessage.historyMessage.append (loginUser + " "
+                ServerMessage.historyMessage.insert (0,loginUser + " "
                         + date.format (new Date ()).toString ()
                         + "\n" + message + "\n");
                 System.out.println (ServerMessage.historyMessage.toString () );
@@ -63,7 +64,7 @@ public class ConnectionMessage extends Thread {
             e.printStackTrace();
         } finally {
             System.out.println ("Пользователь \"" + loginUser + "\" отключился!" );
-            ServerMessage.historyMessage.append ("Пользователь \"" + loginUser + "\" отключился! \n");
+            ServerMessage.historyMessage.insert (0,"Пользователь \"" + loginUser + "\" отключился! \n");
             ServerMessage.allConnectionMessages.remove (this);
             close();
         }
