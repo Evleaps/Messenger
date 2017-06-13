@@ -23,16 +23,14 @@ public class ConnectionCheckForOnline extends Thread {
         try {
             in = new BufferedReader (new InputStreamReader (socket.getInputStream ( ),"Windows-1251"));
             out = new ObjectOutputStream (socket.getOutputStream ( ));
-
         } catch (IOException e) {
             e.printStackTrace ( );
             close ( );
         }
     }
 
-    /**Нам передают логин, мы проверяем, является ли он новым или уже используется, если используется,
+    /**Нам передают логин, мы проверяем, является ли он новым или уже хранится в истории allUser, если используется,
      * мы добавляем новичка в список имен. */
-
     @Override
     public void run() {
         try {
@@ -56,6 +54,8 @@ public class ConnectionCheckForOnline extends Thread {
         } catch (IOException e) {
             e.printStackTrace ( );
         } finally {
+            //удаляем логин отключенного пользователя из allUser, теперь его логин снова можно занять!
+            //удаляем нить, закрываем потоки
             ServerCheckForOnline.allUser =
                     ServerCheckForOnline.allUser.replaceAll (loginUser.concat ("\n"),"");
             ServerCheckForOnline.connectionCheckForOnline.remove (this);

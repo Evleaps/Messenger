@@ -1,6 +1,9 @@
 package Client;
 
 import javax.swing.*;
+/**Всплывает окно которое предложит несколько вариантов подключения, в случае с другой IP
+ * нужно будет ввести адресс ПК сервера
+ * cmd>>ipconfig - узнаем IP*/
 
 public class SelectionIP extends JFrame {
     private static String[] setIP = {"LocalHost: 127.0.0.1",

@@ -3,6 +3,8 @@ package Client;
 import javax.swing.*;
 import static Client.Constant.LOGIN;
 
+/**Выбор логина, параметром в конструктор передается актуальный список подключенных пользователей,
+ * ЗАНЯТЫЕ имена выбирать нельзя даже с другим регистром, а так-же короче 3-х и длиннее 15-и символов*/
 
 public  class SelectionLogin extends JFrame {
     private static String[]  setIP          = {LOGIN, "Войти под другим именем"};
@@ -42,7 +44,7 @@ public  class SelectionLogin extends JFrame {
                         flag = true;
                     }
                 }
-
+                //предупредим пользователя, если выбранный логин совпадает с одним из активных
                 if (flag == true)
                     JOptionPane.showMessageDialog (this, "Логин занят другим пользователем!");
                 else {

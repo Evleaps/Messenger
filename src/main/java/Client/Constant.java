@@ -16,8 +16,8 @@ public abstract class Constant {
     public static final int  SLEEP_ONLINE = 1000;
     public static final int  MAX_SYMBOL   = 15;
     public static final int  MIN_SYMBOL   = 2;
-    public static final int  WIDTH_GUI    = 700;
-    public static final int  HEIGHT_GUI   = 600;
+    public static final int  WIDTH_GUI    = 670;
+    public static final int  HEIGHT_GUI   = 540;
     protected static String  IP;
     protected static String  LOGIN;
 

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Ромчи on 12.06.2017.
+ Как только есть подключение, открываем новую нить.
  */
 public class ServerCheckForOnline extends Thread {
     protected static List<ConnectionCheckForOnline> connectionCheckForOnline =

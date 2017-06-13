@@ -6,7 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 
 /**
-
+Проверка на Online, отправляем на сервер логин, читаем с него строку с всеми активными логинами
+ в данный момент.
+ Проверка на s.length () > Constant.MIN_SYMBOL нужна, что-бы точно исключить возможные лишние \n
+ Ожидание Thread.sleep нужно для того, что-бы не нагружать ресурсы системы.
  */
 public class CheckForOnline extends Thread {
     private PrintWriter    outputCheckForOnline;

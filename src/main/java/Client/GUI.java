@@ -8,9 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-/**
- * Created by Ромчи on 12.06.2017.
- */
 public class GUI extends JFrame{
     private JPanel     tykChat;
     private JButton    send;
@@ -37,7 +34,7 @@ public class GUI extends JFrame{
         new SelectionIP ().IPButton ();//пользователь выбирает адресс подключения
 
         try {
-            // Подключаемся в серверам и получаем потоки для передачи сообщений
+            // Подключаемся к серверам и получаем потоки для передачи сообщений
             connectionMessage = new Socket (Constant.IP, Constant.PORT_MESSAGE);
             inputMessage = new ObjectInputStream (connectionMessage.getInputStream ( ));
             outputMessage = new PrintWriter (connectionMessage.getOutputStream ( ), true);
@@ -51,14 +48,13 @@ public class GUI extends JFrame{
 
         //Вводим уникальный в чате логин
         selectLogin ( );
-
         // Запускаем вывод всех входящих сообщений в консоль
         new Thread (new ReceiveMessage (inputMessage,chat)).start ();
         //Запускаем поток проверки на Online
-        new Thread (new CheckForOnline (outputCheckForOnline, inputCheckForOnline,  userChat)).start ();
+        new Thread (new CheckForOnline (outputCheckForOnline, inputCheckForOnline, userChat)).start ();
 
         setContentPane (tykChat);
-        pack ();
+        pack ();//размер задается в gui.form
         //setSize (Constant.WIDTH_GUI, Constant.HEIGHT_GUI);
         setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo (null); //окно всплывет в центре монитора
@@ -74,9 +70,9 @@ public class GUI extends JFrame{
             }
         });
     }
-    /** читаем с сервера список занятых логинов, передаем его в качестве параметра, выбираем свободный
-     * SelectionLogin установит логин в Constant и мы отправим наш логин на сервер
-     * */
+    /**   Читаем с сервера список занятых логинов, передаем его в качестве параметра в класс
+     * SelectionLogin, выбираем свободный, SelectionLogin установит логин в Constant и мы
+     * отправим наш логин на сервер */
     private void selectLogin() {
         outputCheckForOnline.println ();
         try {

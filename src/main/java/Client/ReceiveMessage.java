@@ -4,8 +4,9 @@ import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-/** Класс в вечном цикле принимает сообщение с сервера, как только что-то получил, добавляет в чат. Ожидает следующее сообщ.*/
-public class ReceiveMessage  extends Thread{
+/** Класс в вечном цикле принимает сообщение с сервера, как только что-то получил,
+ * добавляет в чат. Ожидает следующее сообщ.*/
+public class ReceiveMessage extends Thread{
     private ObjectInputStream inputMessage;
     private JTextArea chat;
 
