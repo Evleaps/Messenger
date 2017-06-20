@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 /**
 Проверка на Online, отправляем на сервер логин, читаем с него строку с всеми активными логинами
  в данный момент.
- Проверка на s.length () > Constant.MIN_SYMBOL нужна, что-бы точно исключить возможные лишние \n
+ Проверка на s.length () > ConstantServer.MIN_SYMBOL нужна, что-бы точно исключить возможные лишние \n
  Ожидание Thread.sleep нужно для того, что-бы не нагружать ресурсы системы.
  */
 public class CheckForOnline extends Thread {
@@ -26,15 +26,15 @@ public class CheckForOnline extends Thread {
     public void run(){
         try {
             while (true){
-                outputCheckForOnline.println (Constant.LOGIN);
+                outputCheckForOnline.println (ConstantClient.LOGIN);
                 String[] allUserOnline = inputCheckForOnline.readObject ().toString ().split ("\n");
                 String all = "";
                 for (String s : allUserOnline) {
-                    if (s.length () > Constant.MIN_SYMBOL) all +=  s + "\n";
+                    if (s.length () > ConstantClient.MIN_SYMBOL) all +=  s + "\n";
                 }
 
                 userChat.setText ("Участники беседы: " + "\n" + all);
-                Thread.sleep (Constant.SLEEP_ONLINE);
+                Thread.sleep (ConstantClient.SLEEP_ONLINE);
             }
 
         } catch (IOException e1) {

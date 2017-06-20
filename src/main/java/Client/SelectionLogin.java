@@ -1,7 +1,7 @@
 package Client;
 
 import javax.swing.*;
-import static Client.Constant.LOGIN;
+import static Client.ConstantClient.LOGIN;
 
 /**Выбор логина, параметром в конструктор передается актуальный список подключенных пользователей,
  * ЗАНЯТЫЕ имена выбирать нельзя даже с другим регистром, а так-же короче 3-х и длиннее 15-и символов*/
@@ -48,11 +48,14 @@ public  class SelectionLogin extends JFrame {
                 if (flag == true)
                     JOptionPane.showMessageDialog (this, "Логин занят другим пользователем!");
                 else {
-                    if (unverifiedName.length () > Constant.MIN_SYMBOL && unverifiedName.length () <= Constant.MAX_SYMBOL) {
+                    if (unverifiedName.length () > ConstantClient.MIN_SYMBOL
+                            && unverifiedName.length () <= ConstantClient.MAX_SYMBOL
+                            && !unverifiedName.contains ("\\p{Punct}")) {
                         LOGIN = unverifiedName;
                         break;
                     } else
-                        JOptionPane.showMessageDialog (this, "Логин должен быть от 3-х до 15-и символов");
+                        JOptionPane.showMessageDialog (this, "Логин должен быть " +
+                                "от 3-х до 15-и символов и не содержать пунктуации");
                 }
         }
     }

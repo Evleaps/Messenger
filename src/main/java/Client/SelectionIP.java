@@ -21,13 +21,13 @@ public class SelectionIP extends JFrame {
 
         try {
             if (selectionIP.toString ( ).equals ("LocalHost: 127.0.0.1")) {
-                Constant.IP = "127.0.0.1";
+                ConstantClient.IP = "127.0.0.1";
             } else if (selectionIP.toString ( ).equals ("Статический IP: 192.168.137.1")) {
-                Constant.IP = "192.168.137.1";
+                ConstantClient.IP = "192.168.137.1";
             } else if (selectionIP.toString ( ).equals ("Динамический IP: 95.79.129.164")) {
-                Constant.IP = "95.79.129.164";
+                ConstantClient.IP = "95.79.129.164";
             } else {
-                Constant.IP = JOptionPane.showInputDialog (this,
+                ConstantClient.IP = JOptionPane.showInputDialog (this,
                         "Введите IP-адресс подключения",
                         "Настройка подключения",
                         JOptionPane.WARNING_MESSAGE);

@@ -10,7 +10,7 @@ package Client;
  6.WIDTH_GUI/HEIGHT_GUI - Устанавливаем размер всплывающего окна чата
  7.IP, LOGIN задаются при включении программы
  */
-public abstract class Constant {
+public abstract class ConstantClient {
     public static final int  PORT_MESSAGE = 7000;
     public static final int  PORT_ONLINE  = 7001;
     public static final int  SLEEP_ONLINE = 1000;

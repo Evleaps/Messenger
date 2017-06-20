@@ -1,40 +1,39 @@
 package Server.ServerMessage;
 
+import Server.ConstantServer;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /** Сервер бесконечно ожидает подключение. Если оно появилось, то создает новый поток для каждого клиента
  * Список allConections содержит всех пользователей, получив вообщ мы отправляем его всем пользователям
  * из списка используя foreach. См.класс Connections*/
 public class ServerMessage extends Thread {
-    private static final int PORT_MESSAGE = 7000;
-    protected static List<ConnectionMessage> allConnectionMessages =
-            Collections.synchronizedList (new ArrayList<ConnectionMessage> ( ));
+    private static List<ConnectionMessage> allConnectionMessages =
+            Collections.synchronizedList (new ArrayList<ConnectionMessage> ());
     private static ServerSocket server;
-    protected static StringBuffer historyMessage = new StringBuffer ();
+    private static StringBuffer historyMessage = new StringBuffer ();
 
     @Override
     public void run() {
-       waitingForConnection ();
+        waitingForConnection ();
     }
 
     public void waitingForConnection() {
         try {
-            server = new ServerSocket (PORT_MESSAGE);
+            server = new ServerSocket (ConstantServer.PORT_MESSAGE);
             while (true) {
                 Socket socket = server.accept ( );
-                ConnectionMessage newConected = new ConnectionMessage (socket, allConnectionMessages);
+                ConnectionMessage newConected = new ConnectionMessage (socket, allConnectionMessages, historyMessage);
                 allConnectionMessages.add (newConected);
                 newConected.start ( );
             }
         } catch (IOException e) {
-            e.printStackTrace ( );
+            e.printStackTrace ();
         } finally {
-            closeAll ( );
+            closeAll ();
         }
     }
 
@@ -51,5 +50,6 @@ public class ServerMessage extends Thread {
         }
     }
 }
+
 
 

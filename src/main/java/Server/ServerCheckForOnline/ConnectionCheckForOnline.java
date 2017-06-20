@@ -9,10 +9,10 @@ import java.util.List;
 
 public class ConnectionCheckForOnline extends Thread {
     private List<ConnectionCheckForOnline> connectionCheckForOnline;
-    private BufferedReader in;
+    private BufferedReader     in;
     private ObjectOutputStream out;
-    private Socket socket;
-    private String loginUser;
+    private Socket             socket;
+    private String             loginUser;
 
 
     public ConnectionCheckForOnline(Socket socket,
@@ -34,7 +34,7 @@ public class ConnectionCheckForOnline extends Thread {
     @Override
     public void run() {
         try {
-            while (socket.isConnected ( )) {
+            while (true) {
                 loginUser = in.readLine ( );
                 String[] user = ServerCheckForOnline.allUser.split ("\n");
 

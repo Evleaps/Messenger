@@ -1,6 +1,8 @@
 package Server.ServerCheckForOnline;
 
 
+import Server.ConstantServer;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,7 +16,6 @@ import java.util.List;
 public class ServerCheckForOnline extends Thread {
     protected static List<ConnectionCheckForOnline> connectionCheckForOnline =
             Collections.synchronizedList (new ArrayList<ConnectionCheckForOnline> ( ));
-    private static final int PORT_ONLINE = 7001;
     private ServerSocket server;
     protected static String allUser = "";
 
@@ -25,7 +26,7 @@ public class ServerCheckForOnline extends Thread {
 
     public void waitingForConnection() {
         try {
-            server = new ServerSocket (PORT_ONLINE);
+            server = new ServerSocket (ConstantServer.PORT_ONLINE);
             while (true) {
                 Socket socket = server.accept ( );
                 ConnectionCheckForOnline newConnect = new ConnectionCheckForOnline (socket, connectionCheckForOnline);

@@ -8,18 +8,20 @@ import java.io.ObjectInputStream;
  * добавляет в чат. Ожидает следующее сообщ.*/
 public class ReceiveMessage extends Thread{
     private ObjectInputStream inputMessage;
-    private JTextArea chat;
+    private JList areaMessage;
 
-    public ReceiveMessage(ObjectInputStream inputMessage,JTextArea chat) {
+    public ReceiveMessage(ObjectInputStream inputMessage, JList areaMessage) {
         this.inputMessage = inputMessage;
-        this.chat = chat;
+        this.areaMessage = areaMessage;
     }
 
     public void run() {
         try {
+            areaMessage.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);//можно выбрать только 1 запись в JList
             while (true) {
                 String str = inputMessage.readObject ().toString ();
-                chat.setText (str);
+                String[] allMessage = str.split ("\n");
+                areaMessage.setListData (allMessage);
             }
         } catch (IOException e) {
             System.err.println ("Ошибка при получении сообщения.");
@@ -29,4 +31,5 @@ public class ReceiveMessage extends Thread{
         }
     }
 }
+
 
